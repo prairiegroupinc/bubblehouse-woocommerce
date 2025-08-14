@@ -89,6 +89,10 @@ function bubblehouse_render_iframe_block($attributes) {
     $kid = get_option('bubblehouse_kid', '');
     $shared_secret = get_option('bubblehouse_shared_secret', '');
 
+    if (empty($host)) {
+        $host = "app.bubblehouse.com";
+    }
+
     if (empty($host) || empty($shop_slug) || empty($kid) || empty($shared_secret)) {
         return '<div style="padding: 20px; border: 1px solid #ccc; background: #f9f9f9;">Bubblehouse: Missing required configuration (host, shopSlug, kid, sharedSecret)</div>';
     }
