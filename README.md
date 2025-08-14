@@ -8,7 +8,7 @@ This single-file plugin creates a Gutenberg block that renders secure BubbleHous
 
 ## Features
 
-- Gutenberg block ([[bubblehouse/iframe]]) for easy iframe embedding
+- Gutenberg block (`bubblehouse/iframe`) for easy iframe embedding
 - JWT token generation with HS256 algorithm
 - Customer ID integration for personalized content
 - Configurable iframe height and page selection
@@ -17,7 +17,7 @@ This single-file plugin creates a Gutenberg block that renders secure BubbleHous
 
 ## Installation
 
-1. Upload [[bubblehouse-woocommerce.php]] to your [[/wp-content/plugins/]] directory
+1. Upload `bubblehouse-woocommerce.php` to your `/wp-content/plugins/` directory
 2. Activate the plugin through the WordPress admin panel
 3. Configure the plugin settings at Settings → BubbleHouse
 
@@ -27,7 +27,7 @@ Navigate to **Settings → BubbleHouse** in your WordPress admin to configure th
 
 ### Required Settings
 
-- **Host**: API host (defaults to [[app.bubblehouse.com]])
+- **Host**: API host (defaults to `app.bubblehouse.com`)
 - **Shop Slug**: Your unique shop identifier from BubbleHouse
 - **KID**: Key ID from your BubbleHouse dashboard
 - **Shared Secret**: Base64 encoded secret from your BubbleHouse dashboard
@@ -46,13 +46,13 @@ Navigate to **Settings → BubbleHouse** in your WordPress admin to configure th
 1. Edit any page or post in the Gutenberg editor
 2. Add a new block and search for "BubbleHouse Iframe"
 3. Configure the block settings in the sidebar:
-   - **Page**: BubbleHouse page name (default: [[Rewards7]])
-   - **Height**: Iframe height in pixels (default: [[600]])
+   - **Page**: BubbleHouse page name (default: `Rewards7`)
+   - **Height**: Iframe height in pixels (default: `600`)
 
 ### Block Attributes
 
-- [[page]]: The BubbleHouse page identifier to load
-- [[height]]: The iframe height in pixels
+- `page`: The BubbleHouse page identifier to load
+- `height`: The iframe height in pixels
 
 ## Technical Details
 
@@ -61,14 +61,14 @@ Navigate to **Settings → BubbleHouse** in your WordPress admin to configure th
 The plugin generates JWT tokens with the following specifications:
 
 - **Algorithm**: HS256
-- **Header**: Contains [[typ]], [[alg]], and [[kid]] fields
-- **Payload**: Contains [[aud: "BH"]], [[sub]], [[iat]], and [[exp]] fields
+- **Header**: Contains `typ`, `alg`, and `kid` fields
+- **Payload**: Contains `aud: "BH"`, `sub`, `iat`, and `exp` fields
 - **Expiration**: 1 hour (3600 seconds)
 
 ### Customer Integration
 
-- **Logged-in users**: JWT subject = [[{shop_slug}/{user_id}]]
-- **Anonymous users**: JWT subject = [[{shop_slug}]]
+- **Logged-in users**: JWT subject = `{shop_slug}/{user_id}`
+- **Anonymous users**: JWT subject = `{shop_slug}`
 
 ### Generated URL Format
 
@@ -79,15 +79,15 @@ https://{host}/blocks/v2023061/{shop_slug}/{page}?instance=bhpage&auth={jwt_toke
 ### Security Features
 
 The iframe includes these sandbox attributes for security:
-- [[allow-top-navigation]]
-- [[allow-scripts]]
-- [[allow-forms]]
-- [[allow-modals]]
-- [[allow-popups]]
-- [[allow-popups-to-escape-sandbox]]
-- [[allow-same-origin]]
+- `allow-top-navigation`
+- `allow-scripts`
+- `allow-forms`
+- `allow-modals`
+- `allow-popups`
+- `allow-popups-to-escape-sandbox`
+- `allow-same-origin`
 
-Plus [[allow="clipboard-write"]] for clipboard access.
+Plus `allow="clipboard-write"` for clipboard access.
 
 ## File Structure
 
@@ -99,14 +99,14 @@ README.md                      # Documentation
 ## Key Functions
 
 ### Core Functions
-- [[bubblehouse_init()]]: Registers the Gutenberg block
-- [[bubblehouse_render_iframe_block()]]: Renders the iframe HTML
-- [[bubblehouse_generate_jwt()]]: Creates JWT tokens
+- `bubblehouse_init()`: Registers the Gutenberg block
+- `bubblehouse_render_iframe_block()`: Renders the iframe HTML
+- `bubblehouse_generate_jwt()`: Creates JWT tokens
 
 ### Admin Functions
-- [[bubblehouse_admin_init()]]: Registers plugin settings
-- [[bubblehouse_admin_menu()]]: Adds the admin menu item
-- [[bubblehouse_settings_page()]]: Renders the settings page
+- `bubblehouse_admin_init()`: Registers plugin settings
+- `bubblehouse_admin_menu()`: Adds the admin menu item
+- `bubblehouse_settings_page()`: Renders the settings page
 
 ## Troubleshooting
 
