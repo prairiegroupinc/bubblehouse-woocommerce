@@ -91,12 +91,24 @@ function bubblehouse_settings_page() {
     ?>
     <div class="wrap">
         <h1>Bubblehouse Settings</h1>
-        <form method="post" action="options-general.php?page=bubblehouse">
+        <form method="post" action="options.php">
+            <table class="form-table" role="presentation">
             <?php
             settings_fields('bubblehouse_settings');
-            do_settings_sections('bubblehouse');
+            do_settings_fields('bubblehouse', 'bubblehouse_settings');
+            ?>
+            </table>
+            <?php
             submit_button();
             ?>
+        </form>
+        <form method="post" action="options-general.php?page=bubblehouse">
+            <table class="form-table" role="presentation">
+            <?php
+            settings_fields('bubblehouse_maintenance');
+            do_settings_fields('bubblehouse', 'bubblehouse_maintenance');
+            ?>
+            </table>
         </form>
     </div>
     <?php
