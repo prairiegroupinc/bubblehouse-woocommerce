@@ -35,8 +35,8 @@ Navigate to **Settings → BubbleHouse** in your WordPress admin to configure th
 ### Getting Your Credentials
 
 1. Log into your BubbleHouse dashboard
-2. Navigate to the integration settings
-3. Copy your KID and Shared Secret values
+2. Locate API section in the sidebar and navigate to the page
+3. Copy your KID and Shared Secret values (or create a new one)
 4. Paste them into the plugin settings
 
 ## Usage
