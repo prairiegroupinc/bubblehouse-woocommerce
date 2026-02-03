@@ -185,8 +185,38 @@ function bubblehouse_enqueue_block_editor_assets() {
 }
 
 add_action('init', 'bubblehouse_init');
+add_action('rest_api_init', 'bubblehouse_register_rest_routes');
 add_action('admin_init', 'bubblehouse_admin_init');
 add_action('admin_menu', 'bubblehouse_admin_menu');
+
+function bubblehouse_register_rest_routes() {
+    register_rest_route('bubblehouse/v1', '/token', array(
+        'methods' => 'GET',
+        'callback' => 'bubblehouse_rest_token',
+        'permission_callback' => '__return_true'
+    ));
+}
+
+function bubblehouse_rest_token($request) {
+    $shop_slug = get_option('bubblehouse_shop_slug', '');
+    $kid = get_option('bubblehouse_kid', '');
+    $shared_secret = get_option('bubblehouse_shared_secret', '');
+
+    if (empty($shop_slug) || empty($kid) || empty($shared_secret)) {
+        return new WP_Error(
+            'bubblehouse_not_configured',
+            'Bubblehouse plugin not configured',
+            array('status' => 500)
+        );
+    }
+
+    $user_id = get_current_user_id();
+    $subject = $user_id ? "{$shop_slug}/{$user_id}" : $shop_slug;
+
+    $token = bubblehouse_generate_jwt($subject, $kid, $shared_secret, 3600);
+
+    return new WP_REST_Response(array('token' => $token), 200);
+}
 
 // Product sync hooks
 add_action('bubblehouse_sync_products', 'bubblehouse_sync_products_job');
@@ -452,3 +482,15 @@ function bubblehouse_get_woocommerce_collections() {
 
     return $collections;
 }
+
+function bubblehouse_storefront_nonce() {
+    ?>
+    <script>
+        window.Bubblehouse ??= {};
+        window.Bubblehouse.WooCommerce ??= {};
+        window.Bubblehouse.WooCommerce.nonce = "<?= esc_js(wp_create_nonce('wp_rest')) ?>";
+    </script>
+    <?php
+}
+
+add_action( 'wp_enqueue_scripts', 'bubblehouse_storefront_nonce', 1, 1 );
