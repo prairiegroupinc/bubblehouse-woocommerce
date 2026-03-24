@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Bubblehouse WooCommerce Integration
  * Description: Provides iframe block for Bubblehouse integration
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Bubblehouse
  */
 
