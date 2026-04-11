@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Bubblehouse WooCommerce Integration
  * Description: Provides iframe block for Bubblehouse integration
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Bubblehouse
  */
 
@@ -493,4 +493,36 @@ function bubblehouse_storefront_nonce() {
     <?php
 }
 
-add_action( 'wp_enqueue_scripts', 'bubblehouse_storefront_nonce', 1, 1 );
+add_action('wp_enqueue_scripts', 'bubblehouse_storefront_nonce', 1, 1);
+
+/**
+ * BLOCK CHECKOUT: Register extensionCartUpdate callback
+ */
+add_action('woocommerce_blocks_loaded', function() {
+    if (function_exists('woocommerce_store_api_register_update_callback')) {
+        woocommerce_store_api_register_update_callback([
+            'namespace' => 'bh-discounts',
+            'callback'  => function($data) {
+                if (!empty($data['coupon_code'])) {
+                    WC()->cart->apply_coupon(sanitize_text_field($data['coupon_code']));
+                    WC()->cart->calculate_totals();
+                }
+            },
+        ]);
+    }
+});
+
+/**
+ * CLASSIC CHECKOUT: AJAX handler for applying coupon
+ */
+add_action('wp_ajax_bh_apply_coupon', 'bh_apply_coupon');
+add_action('wp_ajax_nopriv_bh_apply_coupon', 'bh_apply_coupon');
+
+function bh_apply_coupon() {
+    if (!empty( $_POST['coupon_code'])) {
+        WC()->cart->apply_coupon( sanitize_text_field($_POST['coupon_code']));
+        WC()->cart->calculate_totals();
+        wp_send_json_success();
+    }
+    wp_send_json_error();
+}
