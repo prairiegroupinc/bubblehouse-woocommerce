@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Bubblehouse WooCommerce Integration
  * Description: Provides iframe block for Bubblehouse integration
- * Version: 1.2.1
+ * Version: 1.2.2
  * Author: Bubblehouse
  */
 
@@ -133,7 +133,7 @@ function bubblehouse_render_iframe_block($attributes) {
     $customer_id = is_user_logged_in() ? get_current_user_id() : null;
     $subject = $customer_id ? "{$shop_slug}/{$customer_id}" : $shop_slug;
 
-    $auth_token = bubblehouse_generate_jwt($subject, $kid, $shared_secret, 3600);
+    $auth_token = bubblehouse_generate_jwt($subject, $kid, $shared_secret, 604800);
 
     $iframe_url = "https://{$host}/blocks/v2023061/{$shop_slug}/{$page}?instance=bhpage&auth={$auth_token}";
     $script_url = "https://{$host}/s/{$shop_slug}/bubblehouse.js";
@@ -147,7 +147,7 @@ function bubblehouse_render_iframe_block($attributes) {
     );
 }
 
-function bubblehouse_generate_jwt($subject, $kid, $shared_secret_base64, $validity_seconds = 3600) {
+function bubblehouse_generate_jwt($subject, $kid, $shared_secret_base64, $validity_seconds = 604800) {
     $now_unix = time();
 
     $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256', 'kid' => $kid]);
@@ -213,7 +213,7 @@ function bubblehouse_rest_token($request) {
     $user_id = get_current_user_id();
     $subject = $user_id ? "{$shop_slug}/{$user_id}" : $shop_slug;
 
-    $token = bubblehouse_generate_jwt($subject, $kid, $shared_secret, 3600);
+    $token = bubblehouse_generate_jwt($subject, $kid, $shared_secret, 604800);
 
     return new WP_REST_Response(array('token' => $token), 200);
 }
@@ -342,7 +342,7 @@ function bubblehouse_sync_products_job() {
         'debug' => false
     );
 
-    $auth_token = bubblehouse_generate_jwt($shop_slug, $kid, $shared_secret, 3600);
+    $auth_token = bubblehouse_generate_jwt($shop_slug, $kid, $shared_secret, 604800);
     $api_url = "https://{$host}/api/v2023061/$shop_slug/UpdateProducts3";
 
     $response = wp_remote_post($api_url, array(
