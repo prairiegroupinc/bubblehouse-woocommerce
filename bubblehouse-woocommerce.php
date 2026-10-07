@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Bubblehouse WooCommerce Integration
  * Description: Provides iframe block for Bubblehouse integration
- * Version: 1.2.2
+ * Version: 1.2.3
  * Author: Bubblehouse
  */
 
@@ -131,9 +131,10 @@ function bubblehouse_render_iframe_block($attributes) {
     }
 
     $customer_id = is_user_logged_in() ? get_current_user_id() : null;
+    $customer_email = $customer_id ? wp_get_current_user()->user_email : '';
     $subject = $customer_id ? "{$shop_slug}/{$customer_id}" : $shop_slug;
 
-    $auth_token = bubblehouse_generate_jwt($subject, $kid, $shared_secret, 604800);
+    $auth_token = bubblehouse_generate_jwt($subject, $kid, $shared_secret, 604800, $customer_email);
 
     $iframe_url = "https://{$host}/blocks/v2023061/{$shop_slug}/{$page}?instance=bhpage&auth={$auth_token}";
     $script_url = "https://{$host}/s/{$shop_slug}/bubblehouse.js";
@@ -147,17 +148,21 @@ function bubblehouse_render_iframe_block($attributes) {
     );
 }
 
-function bubblehouse_generate_jwt($subject, $kid, $shared_secret_base64, $validity_seconds = 604800) {
+function bubblehouse_generate_jwt($subject, $kid, $shared_secret_base64, $validity_seconds = 604800, $customer_email = '') {
     $now_unix = time();
 
     $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256', 'kid' => $kid]);
 
-    $payload = json_encode([
+    $claims = [
         'aud' => 'BH',
         'sub' => $subject,
         'iat' => $now_unix,
         'exp' => $now_unix + $validity_seconds
-    ]);
+    ];
+    if (!empty($customer_email)) {
+        $claims['ce'] = $customer_email;
+    }
+    $payload = json_encode($claims);
 
     $base64_url_encode = function($data) {
         return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
@@ -211,9 +216,10 @@ function bubblehouse_rest_token($request) {
     }
 
     $user_id = get_current_user_id();
+    $customer_email = $user_id ? wp_get_current_user()->user_email : '';
     $subject = $user_id ? "{$shop_slug}/{$user_id}" : $shop_slug;
 
-    $token = bubblehouse_generate_jwt($subject, $kid, $shared_secret, 604800);
+    $token = bubblehouse_generate_jwt($subject, $kid, $shared_secret, 604800, $customer_email);
 
     return new WP_REST_Response(array('token' => $token), 200);
 }
